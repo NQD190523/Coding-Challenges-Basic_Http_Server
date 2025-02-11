@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class HandleRequest {
+
+    private static final String WEB_ROOT = "www";
     public static void handleRequest(Socket clienSocket) throws IOException {
         System.out.println("Request received from " + clienSocket.getInetAddress());
         BufferedReader in = new BufferedReader(new InputStreamReader(clienSocket.getInputStream())); 
