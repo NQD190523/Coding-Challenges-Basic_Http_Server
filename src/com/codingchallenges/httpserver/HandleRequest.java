@@ -1,6 +1,7 @@
 package com.codingchallenges.httpserver;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -8,7 +9,7 @@ import java.net.Socket;
 
 public class HandleRequest {
 
-    private static final String WEB_ROOT = "www";
+    private static final String WEB_ROOT = "src\\com\\codingchallenges\\www";
     public static void handleRequest(Socket clienSocket) throws IOException {
         System.out.println("Request received from " + clienSocket.getInetAddress());
         BufferedReader in = new BufferedReader(new InputStreamReader(clienSocket.getInputStream())); 
@@ -23,18 +24,23 @@ public class HandleRequest {
 
         //extract the request path 
         String[] requestLine = request.split(" ");
-        String path = (requestLine.length > 1) ? requestLine[1] : "/index.html";
+        String path = (requestLine.length > 1) ? requestLine[1] : "/";
         System.out.println("Handling request for: " + path);
 
-        //prepare the http response
-        String response = "Requested path:" + path;
-        String  responseString = "HTTP/1.1 200 OK\r\n" 
-                                            + "Content-Type: text/plain\r\n" + "Content-Length:" + response.length() + "\r\n" + "\r\n" + response;
-        System.out.println("Response: " + responseString);
-        //send the response
-        out.write(responseString.getBytes());
-        out.flush();
+        if(path.equals("/")){
+            path = "/index.html";
+        }
+        // Prevent directory traversal attacks (remove "..")
+        path = path.replace("..", "");
+
+        File file = new File(WEB_ROOT + path);
+        System.out.println("File: " + file.getAbsolutePath());
+        if(file.exists() && file.exists()){
+            SendResponse.sendResponse(out, 200, "OK", file);
+        } else{
+            SendResponse.sendNotFound(out);
+        }
+        in.close();          
         out.close();
-        in.close();
     }
 }
