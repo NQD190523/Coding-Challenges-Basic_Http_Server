@@ -27,5 +27,6 @@ public class App {
             System.out.println("Client connected");
             //handle the request
         }
+        //close the server
     }
 }
