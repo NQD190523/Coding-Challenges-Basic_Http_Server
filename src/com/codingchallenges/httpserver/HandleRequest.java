@@ -59,7 +59,6 @@ public class HandleRequest {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            clienSocket.close();
             System.out.println("Client disconnected");
         }
     }
